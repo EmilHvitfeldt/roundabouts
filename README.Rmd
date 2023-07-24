@@ -1,0 +1,61 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# roundabouts <img src="man/figures/logo.png" align="right" height="139" />
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+The goal of roundabouts is to provide a R friendly way to access the roundabouts data from <https://roundabouts.kittelson.com/>.
+
+## Installation
+
+You can install the development version of roundabouts like so:
+
+``` r
+pak::pak("emilhvitfeldt/roundabouts")
+```
+
+## Example
+
+The `roundabouts` data set:
+
+```{r example}
+library(roundabouts)
+dplyr::glimpse(roundabouts)
+```
+
+We can visualize the locations of the collected roundabouts
+
+```{r}
+#| message: false
+library(tidyverse)
+
+world_map <- map_data("world")
+
+roundabouts_loc <- roundabouts |>
+  separate(coordinates, c("lon", "lat"), sep = ",", convert = TRUE)
+
+distinct(world_map, region) %>% 
+  ggplot(aes(map_id = region)) +
+  geom_map(map = world_map) +
+  expand_limits(x = world_map$long, y = world_map$lat) +
+  geom_point(aes(lon, lat), data = roundabouts_loc, inherit.aes = FALSE, 
+             color = "orange", alpha = 0.2, size = 0.05) +
+  theme_void() +
+  theme(panel.background = element_rect(fill = "lightblue"))
+
+```
+
